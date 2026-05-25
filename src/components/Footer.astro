@@ -1,0 +1,25 @@
+---
+const currentYear = new Date().getFullYear();
+---
+<footer class="bg-primary-950 py-12 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center flex-col md:flex-row">
+      <div class="mb-4 md:mb-0">
+        <a href="/" class="text-2xl font-bold tracking-tighter text-white">
+          Sarah Jenkins<span class="text-primary-500">.</span>
+        </a>
+        <p class="text-primary-400 mt-2 text-sm">Strategic HR Consulting for Modern Workplaces.</p>
+      </div>
+      <div class="flex space-x-6 text-sm text-primary-400">
+        <a href="#about" class="hover:text-white transition-colors">About</a>
+        <a href="#services" class="hover:text-white transition-colors">Services</a>
+        <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-primary-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+      <p class="text-primary-500 text-sm">
+        &copy; {currentYear} Sarah Jenkins HR Consulting. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
