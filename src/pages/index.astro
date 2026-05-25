@@ -1,9 +1,23 @@
 ---
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../keystatic.config';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+
+const reader = createReader(process.cwd(), keystaticConfig);
+
+const landing = await reader.singletons.landing.read();
+const services = await reader.collections.services.all();
+const testimonials = await reader.collections.testimonials.all();
+
+const headline = landing?.headline || 'Empowering your workforce to thrive';
+const subheadline = landing?.subheadline || 'Strategic HR consulting to help modern businesses attract, retain, and develop top talent.';
+const aboutTitle = landing?.aboutTitle || "Hi, I'm Sarah Jenkins";
+const aboutContent = landing?.aboutContent || '';
+const yearsExperience = landing?.yearsExperience || 15;
 ---
 
 <Layout title="Sarah Jenkins | HR Consultant">
@@ -17,11 +31,10 @@ import ServiceCard from '../components/ServiceCard.astro';
           <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
             <div class="sm:text-center lg:text-left">
               <h1 class="text-4xl tracking-tight font-extrabold text-primary-900 sm:text-5xl md:text-6xl">
-                <span class="block xl:inline">Empowering your</span>{' '}
-                <span class="block text-primary-600 xl:inline">workforce to thrive</span>
+                {headline}
               </h1>
               <p class="mt-3 text-base text-primary-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                Strategic HR consulting to help modern businesses attract, retain, and develop top talent. Build a culture where your team does their best work.
+                {subheadline}
               </p>
               <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div class="rounded-md shadow">
@@ -63,21 +76,18 @@ import ServiceCard from '../components/ServiceCard.astro';
                 </svg>
             </div>
             <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-lg border border-primary-100 hidden md:block">
-              <p class="text-3xl font-bold text-primary-900 mb-1">15+</p>
+              <p class="text-3xl font-bold text-primary-900 mb-1">{yearsExperience}+</p>
               <p class="text-sm font-medium text-primary-600">Years Experience</p>
             </div>
           </div>
           <div>
             <h2 class="text-3xl font-extrabold text-primary-900 tracking-tight sm:text-4xl mb-6">
-              Hi, I'm Sarah Jenkins
+              {aboutTitle}
             </h2>
             <div class="prose prose-lg text-primary-600">
-              <p class="mb-4">
-                I partner with growing businesses to build scalable HR foundations and foster cultures where people love to work. With over 15 years of experience spanning startups to Fortune 500 companies, I bring a pragmatic, human-centric approach to human resources.
-              </p>
-              <p class="mb-6">
-                My philosophy is simple: when your team thrives, your business thrives. I help leaders navigate complex organizational challenges, from talent acquisition to performance management and compliance.
-              </p>
+              <div class="whitespace-pre-line mb-6">
+                {aboutContent}
+              </div>
               <ul class="space-y-3 mb-8 list-none pl-0">
                 <li class="flex items-center text-primary-700">
                   <svg class="h-5 w-5 text-primary-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -113,36 +123,12 @@ import ServiceCard from '../components/ServiceCard.astro';
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <ServiceCard 
-            title="Talent Acquisition Strategy" 
-            description="End-to-end recruitment process design, employer branding, and strategies to attract top-tier talent in competitive markets."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`}
-          />
-          <ServiceCard 
-            title="Performance Management" 
-            description="Development of clear, actionable performance evaluation frameworks that align employee goals with company objectives."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`}
-          />
-          <ServiceCard 
-            title="HR Compliance & Audit" 
-            description="Comprehensive review of existing HR policies, employee handbooks, and procedures to ensure local and federal compliance."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>`}
-          />
-          <ServiceCard 
-            title="Leadership Coaching" 
-            description="1-on-1 coaching for executives and managers to enhance their leadership capabilities, emotional intelligence, and team management skills."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`}
-          />
-          <ServiceCard 
-            title="Employee Relations" 
-            description="Guidance on handling complex employee situations, conflict resolution, and creating a positive, inclusive workplace environment."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`}
-          />
-          <ServiceCard 
-            title="Organizational Design" 
-            description="Restructuring teams, defining clear roles and responsibilities, and optimizing workflows for maximum efficiency and scale."
-            icon={`<svg class="h-6 w-6 text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>`}
-          />
+          {services.map((service) => (
+            <ServiceCard
+              title={service.entry.title}
+              description={service.entry.description}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -152,36 +138,25 @@ import ServiceCard from '../components/ServiceCard.astro';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-extrabold text-center mb-16">Trusted by Growing Companies</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div class="bg-primary-800 p-8 rounded-xl relative">
-            <svg class="absolute top-6 left-6 h-8 w-8 text-primary-700 opacity-50" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
-            </svg>
-            <p class="relative mt-4 text-lg text-primary-100 italic">
-              "Sarah completely transformed our hiring process. We reduced our time-to-hire by 40% while simultaneously increasing the quality of our candidates. She's not just a consultant; she feels like a core part of our leadership team."
-            </p>
-            <div class="mt-6 flex items-center">
-              <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-xl font-bold">M</div>
-              <div class="ml-4">
-                <p class="text-base font-medium text-white">Michael Chen</p>
-                <p class="text-sm text-primary-300">CEO, TechStart Inc.</p>
+          {testimonials.map((testimonial) => (
+            <div class="bg-primary-800 p-8 rounded-xl relative">
+              <svg class="absolute top-6 left-6 h-8 w-8 text-primary-700 opacity-50" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+              </svg>
+              <p class="relative mt-4 text-lg text-primary-100 italic">
+                "{testimonial.entry.quote}"
+              </p>
+              <div class="mt-6 flex items-center">
+                <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-xl font-bold">
+                  {testimonial.entry.authorName.charAt(0)}
+                </div>
+                <div class="ml-4">
+                  <p class="text-base font-medium text-white">{testimonial.entry.authorName}</p>
+                  <p class="text-sm text-primary-300">{testimonial.entry.authorTitle}</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="bg-primary-800 p-8 rounded-xl relative">
-            <svg class="absolute top-6 left-6 h-8 w-8 text-primary-700 opacity-50" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
-            </svg>
-            <p class="relative mt-4 text-lg text-primary-100 italic">
-              "Navigating employee relations and compliance was keeping me up at night. Bringing Sarah on board gave me incredible peace of mind. Her advice is practical, empathetic, and always legally sound."
-            </p>
-            <div class="mt-6 flex items-center">
-              <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-xl font-bold">E</div>
-              <div class="ml-4">
-                <p class="text-base font-medium text-white">Elena Rodriguez</p>
-                <p class="text-sm text-primary-300">Founder, Bloom Agency</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,11 +1,13 @@
 import { defineConfig } from 'astro/config';
-
 import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react';
+import keystatic from '@keystatic/astro';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  site: 'https://pethiopan.github.io',
-  base: '/hr-consultant-portfolio',
+  adapter: vercel(),
+  integrations: [react(), keystatic()],
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+  },
 });
