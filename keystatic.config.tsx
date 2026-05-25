@@ -4,6 +4,9 @@ export default config({
   storage: {
     kind: 'github',
     repo: 'PethioPan/hr-consultant-portfolio',
+    app: {
+      slug: import.meta.env.PUBLIC_KEYSTATIC_GITHUB_APP_SLUG,
+    },
   },
   singletons: {
     landing: singleton({
