@@ -19,6 +19,8 @@ const subheadline = landing?.subheadline || 'Strategic HR consulting to help mod
 const aboutTitle = landing?.aboutTitle || "Hi, I'm Sarah Jenkins";
 const aboutContent = landing?.aboutContent || '';
 const yearsExperience = landing?.yearsExperience || 15;
+
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY;
 ---
 
 <Layout title="Sarah Jenkins | HR Consultant">
@@ -173,27 +175,41 @@ const yearsExperience = landing?.yearsExperience || 15;
             <p class="text-lg text-primary-600 mb-8 max-w-2xl mx-auto">
               Schedule a free 30-minute discovery call to discuss your HR challenges and explore how we can work together.
             </p>
-            <form class="max-w-lg mx-auto text-left" action="#" method="POST" onsubmit="event.preventDefault(); alert('In a real app, this would send your message!');">
-              <div class="grid grid-cols-1 gap-6">
-                <div>
-                  <label for="name" class="block text-sm font-medium text-primary-700">Name</label>
-                  <input type="text" name="name" id="name" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="Jane Doe" required>
+
+            <!-- Contact form pane. A booking-calendar pane (#contact-booking-pane) will sit
+                 alongside this in Phase 2; keep this pane and its script self-contained. -->
+            <div id="contact-form-pane" class="max-w-lg mx-auto text-left">
+              <h3 class="text-sm font-semibold text-primary-500 tracking-wide uppercase mb-4 text-center">
+                Prefer to write? Send a message
+              </h3>
+              <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value={web3formsKey}>
+                <input type="hidden" name="subject" value="New contact form submission — Sarah Jenkins site">
+                <input type="hidden" name="from_name" value="Sarah Jenkins Portfolio">
+                <!-- Honeypot: bots tick every field; Web3Forms silently drops these. -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off">
+                <div class="grid grid-cols-1 gap-6">
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-primary-700">Name</label>
+                    <input type="text" name="name" id="name" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="Jane Doe" required>
+                  </div>
+                  <div>
+                    <label for="email" class="block text-sm font-medium text-primary-700">Email</label>
+                    <input type="email" name="email" id="email" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="jane@company.com" required>
+                  </div>
+                  <div>
+                    <label for="message" class="block text-sm font-medium text-primary-700">How can I help you?</label>
+                    <textarea id="message" name="message" rows="4" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="Briefly describe your current HR needs..." required></textarea>
+                  </div>
+                  <div>
+                    <button type="submit" id="contact-submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                      Send Message
+                    </button>
+                    <p id="form-status" role="status" aria-live="polite" class="hidden text-sm mt-2"></p>
+                  </div>
                 </div>
-                <div>
-                  <label for="email" class="block text-sm font-medium text-primary-700">Email</label>
-                  <input type="email" name="email" id="email" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="jane@company.com" required>
-                </div>
-                <div>
-                  <label for="message" class="block text-sm font-medium text-primary-700">How can I help you?</label>
-                  <textarea id="message" name="message" rows="4" class="mt-1 block w-full border-primary-300 rounded-md shadow-sm py-3 px-4 focus:ring-primary-500 focus:border-primary-500 sm:text-sm border" placeholder="Briefly describe your current HR needs..." required></textarea>
-                </div>
-                <div>
-                  <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
-                    Send Message
-                  </button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -201,4 +217,50 @@ const yearsExperience = landing?.yearsExperience || 15;
   </main>
 
   <Footer />
+
+  <script>
+    // Scoped strictly to #contact-form so a future booking widget can't collide.
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (form) {
+      const button = form.querySelector('#contact-submit') as HTMLButtonElement | null;
+      const status = form.querySelector('#form-status') as HTMLParagraphElement | null;
+      const defaultLabel = button?.textContent?.trim() ?? 'Send Message';
+
+      const setStatus = (message: string, isError: boolean) => {
+        if (!status) return;
+        status.textContent = message;
+        status.className = `text-sm mt-2 ${isError ? 'text-red-600' : 'text-primary-700'}`;
+      };
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (button) {
+          button.disabled = true;
+          button.textContent = 'Sending…';
+        }
+        if (status) status.className = 'hidden text-sm mt-2';
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+          });
+          const data = await response.json();
+          if (data.success) {
+            setStatus("Thanks — your message has been sent. I'll be in touch shortly.", false);
+            form.reset();
+          } else {
+            setStatus('Something went wrong. Please try again or email me directly.', true);
+          }
+        } catch {
+          setStatus('Something went wrong. Please try again or email me directly.', true);
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = defaultLabel;
+          }
+        }
+      });
+    }
+  </script>
 </Layout>
